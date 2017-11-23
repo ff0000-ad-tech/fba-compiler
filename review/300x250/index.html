@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html>
+	<!-- BUILD SOURCE: Standard - Base / OPTIONS:  / AdApp: 1.5.56 / AdHtml: v2.8.2 / Created: 10/20/17 03:40pm -->
+	<head>
+		<meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="utf-8" http-equiv="encoding">
+
+
+		<title>RED[RED | Dev | fbaPngNode | kenny | 300x250 | 1.7]</title>
+
+		<script type="text/javascript">
+
+			var debug = true;
+
+			var clickTag 			  	= "http://www.changeme.com/";
+			var collapsedExit			= "http://www.changeme.com/";
+			var expandedExit			= "http://www.changeme.com/";
+
+
+			/* -- INDEX SETTINGS ---------------------------------------------------------------------------
+			 *
+			 *
+			 *	Documentation is here: https://confluence.ff0000.com/display/AT/INDEX
+			 *
+			 *
+			 *
+			 */
+			var adParams = {
+				networkId				: "STANDARD",
+				adWidth				: 600,
+				adHeight				: 500,
+				environmentId			: "debug",
+				politeLoadAfter		: 1,
+				failoverOnError		: true,
+			};
+
+
+			var assets = {
+				preloader: {
+					backgroundColor: "#000000",
+					images: [{
+						source: "preloader_white.gif"
+					}]
+				},
+				failover: {
+					images: [{
+						source: "backup.jpg"
+					}]
+				},
+				images: [],
+				fonts: [],
+				payload: {
+					text: ["js_payload.min.js","core.js","ad.js"],
+					binary: ["fba_payload.png"]
+				}
+			};
+
+
+			var environments = [				{
+					id				: "debug",
+					runPath			: "",
+					adPath			: "",
+				}
+			];
+
+
+			var includes = function() { return []};
+
+
+			var externalIncludes = [
+			];
+
+
+			var runtimeIncludes = {
+			};
+
+
+			var views = function() { return []};
+
+
+			function onImpression() {
+				trace('Index.onImpression()');
+			}
+
+
+			
+
+			function isDevEnvironment() {
+				return adParams.environmentId == 'debug' || window.location.href.match(/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+/);
+			}
+		</script>
+
+		<style type="text/css">
+			html, body, #view {
+				width: 100%;
+				height: 100%;
+			}
+			body {
+				margin: 0px;
+				outline: none;
+				-webkit-tap-highlight-color:rgba(0,0,0,0);
+			}
+		</style>
+		<style type="text/css" id="RED_uiBorder">
+			.ui-border {
+				position:absolute;
+				top:0px;
+				left:0px;
+				width:100%;
+				height:100%; 
+				border-width: 0px;
+				border-style: solid;
+				box-sizing: border-box; 
+				-moz-box-sizing: border-box; 
+				-webkit-box-sizing: border-box;
+			}
+		</style>
+	</head>
+
+
+	<body>
+		<div id="view">
+			<div id="main"></div>
+			<div id="aux">	
+				<div id="preloader" class="ui-border"></div>
+				<div id="fail"></div>
+			</div>
+		</div>
+
+		<!-- preload inline scripts...if not needed until the build, use externalIncludes  --> 
+
+
+
+		<script type="text/javascript">
+			function failAd() {
+				trace ( "Index.failAd()" );
+				document.getElementById( "main" ).style.display = "none";
+				document.getElementById( "aux" ).style.display = "block";
+				document.body.style = "width: " + adParams.failoverWidth + "px; height: " + adParams.failoverHeight + "px; overflow: hidden;";
+				document.getElementById( "fail" ).style.cssText = "position: absolute; " +
+					"width: " + adParams.failoverWidth + "px; height: " + adParams.failoverHeight + "px; " +
+					"left:" + adParams.failoverX + "px; top:" + adParams.failoverY + "px; " + 
+					"background-image: url(" + adParams.adPath + assets.failover.images[0].source + "); background-size: contain; overflow: hidden; ";
+
+			}
+		</script>
+		<script type="text/javascript">
+			var global = this;
+			var View = {};
+			var Network,
+				async,
+				queryParams,
+				adData;
+
+
+			/* -- INIT --------------------------------------------------
+			 *
+			 *
+			 */
+			init();
+			//
+			function init() {
+				trace("DEPLOYED by AdApp: 1.5.8, 10/31/17 11:32am");
+				trace("----------------------------------------------------------------------------------------------------------------------------");
+				trace(" index.html[RED | Dev | fbaPngNode | kenny | 300x250 | 1.7]");
+				trace("----------------------------------------------------------------------------------------------------------------------------");
+				prepareScope();
+				preparePreload();
+				prepareDebug();
+			}
+
+			function prepareScope() {
+				trace('Index.prepareScope()');
+				prepareAsync();
+				preparePolite();
+				queryParams = getQueryParams();
+				if (adParams.failoverOnError)
+					window.onerror = handleError;
+				adParams.requestedEnvironmentId = adParams.environmentId;
+				prepareEnvironment(getDeployProfile(adParams.requestedEnvironmentId));
+			}
+			function prepareAsync() {
+				async = new Async();
+				async.onComplete(prepareAssetLoad);
+			}
+			function preparePolite() {
+				async.wait();
+				function runDelay() {
+					var delay = isDevEnvironment() ? 0 : adParams.politeLoadAfter;
+					setTimeout(function() {
+						trace('Index.DOMContentLoaded + ' + delay + 's');
+						async.done();
+					}, delay * 1000);					
+				}
+				if (/comp|inter|loaded/.test(document.readyState)) {
+					runDelay();
+				}
+				else {
+					document.addEventListener('DOMContentLoaded', function(event) {
+						runDelay();
+					});
+				}
+			}
+			function handleError() {
+				trace('Index.handleError() - JAVASCRIPT ERROR!');
+				window.onerror = function() {}; // after the first error, disable the event listening
+				failAd();
+			}
+
+
+
+
+
+			/* -- PRE LOAD ----------------------------------------------
+			 *
+			 *
+			 */ 
+			function preparePreload() {
+				trace('Index.preparePreload()');
+				prepareAdParams();
+				checkForAdTagParams();
+
+				addContainerStyles();
+				preparePreloader();
+
+				prepareNetwork();
+				makeAuxClickable();
+				onImpression();
+
+			}
+			function prepareAdParams() {
+				adParams.adSize = adParams.adWidth + 'x' + adParams.adHeight;
+				adParams.failoverWidth = adParams.preloaderWidth = adParams.adWidth;
+				adParams.failoverHeight = adParams.preloaderHeight = adParams.adHeight;
+				adParams.failoverX = adParams.preloaderX = 0;
+				adParams.failoverY = adParams.preloaderY = 0;
+				
+			}
+			function checkForAdTagParams() {
+				trace('Index.checkForAdTagParams()');
+				for (var key in queryParams) {
+					var value = queryParams[ key ].replace(/^\{/, '').replace(/\}$/, '');
+					if (value != '') {
+						trace(' - applying to global.' + key + ': ' + value);
+						global[ key ] = value;
+					}
+				}
+			}
+
+
+			function addContainerStyles() {
+				document.getElementById('view').style.cssText = 'position: relative;';
+				var sizeCss = 'width: ' + adParams.adWidth + 'px; height: ' + adParams.adHeight + 'px; ';
+				if (adParams.responsive)
+					sizeCss = 'width: 100%; height: 100%; ';
+				document.getElementById('main').style.cssText = 'position: absolute; left: 0px; top: 0px; ' + sizeCss +
+					'opacity: 0; overflow: hidden; -webkit-user-select: none; -moz-user-select: none; user-select: none';
+			}
+			function preparePreloader() {
+				trace('Index.preparePreloader()');
+				var _assets = assets.preloader;
+				var _preloader = document.getElementById('preloader');
+				var _borderW = _assets.borderWidth || 0;
+				var _styleCss;
+				var _index = 0;
+
+				var _onPreloadersComplete = function() {
+					trace('Index.preparePreloader._onPreloadersComplete()');
+					// if there is a preloader delay then we do not remove this preloader images token
+					// from global.async until that delay completes
+					// otherwise we just fire async.done() because why wait?
+					if (assets.preloader.startDelay > 0) 
+						setTimeout(async.done.bind(async), assets.preloader.startDelay);
+					else async.done();
+				}
+
+				// load a preloader image; gets recursively called if there is a following image to add
+				var _getPreloaderImg = function() {
+					// add one more async token per image loaded
+					_imgAsync.wait();
+
+					var _obj = _assets.images[ _index ];
+					var _img = new Image();
+
+					if (!_obj.offset) _obj.offset = { x:0, y:0 }
+					
+					_img.onload = function(event) {
+						_img.width *= _obj.scale || 1;
+						_img.height *= _obj.scale || 1;
+						var _left = Math.round(((adParams.preloaderWidth - _img.width) / 2) + (_obj.offset.x || 0) - _borderW);
+						var _top = Math.round(((adParams.preloaderHeight - _img.height) / 2) + (_obj.offset.y || 0) - _borderW);
+						_styleCss = 'position: absolute; left: ' + _left + 'px; top: ' + _top + 'px;';
+						_img.style.cssText = _styleCss;
+
+						_preloader.appendChild(_img);
+
+						if (++_index < _assets.images.length) {
+							// go get the next iamge
+							_getPreloaderImg();
+						} else {
+							// this means we've loaded every single preloader image. now we will apply background colors and border properties
+							if (adParams.responsive) _styleCss = 'width: 100%; height: 100%; ';
+							else _styleCss = 'width: ' + adParams.preloaderWidth + 'px; height: ' + adParams.preloaderHeight + 'px; ';
+
+							_preloader.style.cssText = 'overflow: hidden; position: absolute; ' + 'top:' + adParams.preloaderY + 'px; left:' + adParams.preloaderX + 'px; ' + _styleCss + 'border-color: ' + (_assets.borderColor || _assets.backgroundColor) + '; border-width: ' + _borderW + 'px; background-color: ' + _assets.backgroundColor + '; ';
+						}
+
+						// remove the token for this preloader image
+						_imgAsync.done();
+					}
+
+					_img.src = adParams.imagesPath + _obj.source + '?=' + Date.now();
+				}
+
+				// create an async specific for this process
+				var _imgAsync = new Async();
+				_imgAsync.onComplete(_onPreloadersComplete);
+
+				// make the master async wait for a token for all preloader images
+				async.wait();
+
+				// begin loading the images
+				_getPreloaderImg();
+			}
+			function removePreloader() {
+				trace('Index.removePreloader()');
+				var preloader = document.getElementById('preloader')
+				if (preloader) {
+					var aux = document.getElementById('aux');
+					aux.style.display = 'none';
+					aux.removeChild(preloader);
+				}
+			}
+
+
+
+
+
+
+
+
+
+			/* -- NETWORK --------------------------------------------
+			 *
+			 *
+			 */
+			function prepareNetwork() {
+				trace('Index.prepareNetwork()');
+				Network = new function() { 
+					this.exit = function( clickTag ) {
+						trace( "Network -> STANDARD EXIT" );
+						window.open( clickTag, "_blank" );
+					}
+					this.appendMacro = function(_macro, _clickTag) {
+						if (_macro.search(/^%%/) > -1)
+							return _clickTag;
+						else return _macro + _clickTag;
+					}					
+				};
+			}
+			// auxiliary exits: preload or failover
+			function makeAuxClickable() {
+				var aux = document.getElementById('aux');
+				aux.setAttribute('onclick', 'handleAuxClick()');
+			}
+			function handleAuxClick() {
+				trace('Index.handleAuxClick()');
+				Network.exit(clickTag);
+				if (adParams.redAnalytics)
+					trackExit();
+			}
+
+
+
+
+
+
+
+
+
+
+			/* -- ENVIRONMENT --------------------------------------------
+			 *
+			 *
+			 */ 
+			function prepareEnvironment(environment) {
+				adParams.environmentId = environment.id;
+				// run-path + subpaths
+				adParams.runPath = matchProtocolTo(environment.runPath); 	// must be defined in environment
+				adParams.corePath = adParams.runPath + ('corePath' in environment ? environment.corePath : '_adlib/core/');
+				adParams.commonPath = adParams.runPath + ('commonPath' in environment ? environment.commonPath : '_adlib/common/');
+				adParams.jsPath = adParams.commonPath + ("jsPath" in environment ? environment.jsPath : "js/");
+				adParams.loaderPath = adParams.jsPath
+				adParams.fontsPath = adParams.commonPath + ('fontsPath' in environment ? environment.fontsPath : 'fonts/');
+
+				// ad-path and subpaths
+				adParams.adPath = adParams.runPath + environment.adPath;	// must be defined in environment
+				adParams.imagesPath = adParams.adPath + ('imagesPath' in environment ? environment.imagesPath : 'images/');
+				adParams.videosPath = adParams.adPath + ('videosPath' in environment ? environment.videosPath : 'videos/');
+			}
+			function traceDeployProfile() {
+				var line = Array(120).join('-')
+				trace(line);
+				trace(' BUILD SOURCE: Standard - Base / OPTIONS:  / AdApp: 1.5.56 / AdHtml: v2.8.2 / Created: 10/20/17 03:40pm ');
+				trace(line);
+				trace(' NETWORK:', adParams.networkId);
+				trace(' AD SIZE:', adParams.adSize);
+				trace(' ENVIRONMENT:', adParams.environmentId);
+				if (adParams.runPath == '') trace('  RUN PATH:', './'); else trace('  RUN PATH:', adParams.runPath);
+				if (adParams.adPath == '') trace('  AD PATH:', './'); else trace('  AD PATH:', adParams.adPath);
+				if (adParams.adManager) trace('  JSON PATH:', adParams.adManager.jsonMapUrl);
+				trace(' POLITE LOAD AFTER:', adParams.politeLoadAfter + 's');
+				trace(line);
+				trace(' AD PARAMS:', adParams);
+				trace(line);
+			}
+
+
+
+
+			/* -- ASSET LOAD --------------------------------------------
+			 *
+			 *
+			 */
+			function prepareDebug() {
+				trace('Index.prepareDebug()');
+				var debugModeRequested;
+				// index-coded debug control
+				if (typeof debug != 'undefined' && typeof debug != 'function') {
+					debugModeRequested = 'via window-param "var debug = ' + debug + ';"';
+				}
+				// query-string debug control - can override window.debug
+				else if ('debug' in queryParams) {
+					debugModeRequested = 'via query-string "?debug=' + debug + '"'
+					debug = queryParams.debug.match(/^(true|yes|t|y|1)/i) != null;
+				}
+				// unspecified debug state implies we are in build mode
+				else { 
+					debug = true;
+				}
+				// set pathing per requested state
+				if (debugModeRequested) {
+					if (debug) {
+						var debugEnvironment = getDeployProfile("debug");
+						prepareEnvironment(debugEnvironment);
+						traceDeployProfile();
+						console.log(' - DEBUG MODE ON, ' + debugModeRequested);
+						console.log('    * requires "to_debug/" content is at: "' + debugEnvironment.runPath + '"');
+					}
+					else {
+						prepareEnvironment(getDeployProfile(adParams.requestedEnvironmentId));
+						traceDeployProfile();
+						trace(' - DEBUG MODE OFF, ' + debugModeRequested);
+					}
+				}
+				else {
+						traceDeployProfile();
+				}
+			}
+
+
+			function prepareAssetLoad() {
+				trace('Index.prepareAssetLoad()');
+				prepareDependencies();
+				prepareExternalDependencies();
+				concatDependencies();
+				loadDependencies();
+			}
+
+			function prepareDependencies() {
+				adParams.dependencies = [];
+				adParams.optionalDependencies = [];
+			}
+			function prepareExternalDependencies() {
+				adParams.externalDependencies = [
+					// TweenLite dependencies, cached via - https://support.google.com/richmedia/answer/6307288
+					"https://s0.2mdn.net/ads/studio/cached_libs/cssplugin_1.18.0_71489205621d46cbe88348eeb8fe493f_min.js",
+					"https://s0.2mdn.net/ads/studio/cached_libs/easepack_1.18.0_ed5816e732515f56d96a67f6a2a15ccb_min.js",
+					"https://s0.2mdn.net/ads/studio/cached_libs/tweenlite_1.18.0_56fa823cfbbef1c2f4d4346f0f0e6c3c_min.js",
+				];
+			}
+			function concatDependencies() {
+				assets.payload.text = assets.payload.text.filter(function(item) { 
+					var isDebugAsset = item.indexOf('.min.') == -1;
+					if ((debug && isDebugAsset) || (!debug && !isDebugAsset)) 
+						return true;
+					else return false;
+				});
+				assets.payload.text = assets.payload.text.map(function(item) {
+					return adParams.adPath + item;
+				});
+				adParams.dependencies = adParams.dependencies
+				.concat(adParams.optionalDependencies)
+				.concat(includes.call())
+				.concat(assets.payload.text)
+				.concat(adParams.externalDependencies)
+				.concat(externalIncludes);
+			}	
+
+
+			function loadLoader() {
+				trace('Index.loadLoader()');
+				global.addEventListener ('loaderControllerReady', loadDependencies);
+
+				var scriptElem = document.createElement('script');
+				scriptElem.type = 'text/javascript';
+				scriptElem.onerror = failAd;
+				scriptElem.src = adParams.loaderPath + 'LoaderController.js';
+				document.getElementsByTagName('head')[ 0 ].appendChild(scriptElem);
+			}
+			var fbaContent;
+			function loadDependencies() {
+				trace('Index.loadDependencies()');
+				var loadAsync = new Async();
+				loadAsync.onComplete(prepareCore);
+				loadAsync.wait();
+				var jsLoader = new Loader(adParams.dependencies, {
+					name: 'jsLoader', 
+					onComplete: loadAsync.done,
+					onFail: failAd, 
+					scope: global
+				});
+				if (assets.payload.binary.length) {
+					loadAsync.wait();
+					var fbaLoader = new Loader(adParams.adPath + assets.payload.binary[ 0 ], {
+						name: 'fbaLoader', 
+						scope: global,
+						fileType: 'fba',
+						onFail: failAd, 
+						onComplete: function(event) {
+							new Loader(event, {
+								name: 'fbaContentLoader', 
+								scope: global,
+								onFail: failAd, 
+								onComplete: function(event) {
+									fbaContent = event;
+									loadAsync.done();
+								}
+							}).load();
+						}
+					});
+					fbaLoader.load();
+				}
+				jsLoader.load();
+			}
+			
+			function prepareCore() {
+				trace('\n\n\n -- Index.prepareCore() --');
+				PrepareCore.init(prepareCommon, fbaContent);
+			}
+			function prepareCommon() {
+				trace('\n\n\n -- Index.prepareCommon() --');
+				PrepareCommon.init(prepareBuild);
+			}	
+			function prepareBuild() {
+				trace('\n\n\n -- Index.prepareBuild() --');
+				Control.prepareBuild();
+			}
+
+			
+
+
+
+
+
+
+			/* -- GLOBAL UTILITIES --------------------------------------------
+			 *
+			 *
+			 */ 
+			function getDeployProfile(id) {
+				for (var i = 0; i < environments.length; i++) {
+					if (environments[i].id === id) 
+						return environments[i];
+				}
+				return false;
+			}
+			function getQueryParams() {
+				var queryParams = {};
+				var query = window.location.href.split('?');
+				if (query.length > 1) {
+					var params = query[ 1 ].split('&');
+					for (var i in params) {
+						var keyValue = params[ i ].split('=');
+						if (keyValue.length == 2) 
+							queryParams[ keyValue[ 0 ]] = decodeURIComponent(keyValue[ 1 ]);
+					}
+				}
+				return queryParams;
+			}
+			function matchProtocolTo(_url) {
+				if (_url.search(/^http/) > -1) {
+					var _secure = window.location.href.search(/^https/) > -1 || adParams.forceHttps;
+					var _httpProtocol = _secure ? 'https://' : 'http://';
+					
+					if (_url.search(/.*edgecastcdn/) > -1) {
+						var _edgecastContext = _secure ? 'ne1.' + _url.match(/w(a|p)c/i)[ 0 ] + '.' : _url.match(/w(a|p)c\.[a-z0-9]*\./i)[ 0 ];
+						_url = _httpProtocol + _edgecastContext + 'edgecastcdn' + _url.replace(/.*edgecastcdn/, '');
+					} 
+					else if (_url.search(/.*paramount\.com/) > -1) {
+						var _paramountContext = _secure ? 'paramountdlds-a.akamaihd.net' : 'downloads.paramount.com';
+						_url = _httpProtocol + _paramountContext + _url.replace(/.*paramount\.com/, '');
+					}
+					else if (_url.search(/espn\.go\.com/) > -1 || _url.search(/secure\.espncdn\.com/) > -1) {
+						_url = 'https://secure.espncdn.com' + _url.replace(/^.*\.com/, '');
+					}
+					else {
+						_url = _url.replace(/^https?\:\/\//i, _httpProtocol);
+					}
+				}
+				return _url;
+			}
+			function trace() {
+				if (console && (typeof debug == 'undefined' || debug)) {
+					var args = []
+					for (var i=0; i < arguments.length; i++)
+						args.push(arguments[i]);
+					Function.prototype.apply.call(console.log, console, args);
+				}
+			}
+			function getStaticSchedule() {
+				return StaticGenerator.schedule;
+			}
+
+			function Async() {
+				var A = this;
+			 	A.tokens = [];
+			 	A.callback;
+
+			 	// Adds a token to the Async queue. 
+			 	A.wait = function() {
+			 		A.tokens.push(1);
+			 	}
+
+			 	// Removes a token from the Async queue. 
+			 	A.done = function() {
+			 		A.tokens.pop();
+			 		if (A.tokens.length == 0)
+			 			A.callback.call();
+			 	}
+
+			 	// Specifies a callback function, starts a setInterval if one is not currently running, and checks to run the callback. 
+			 	A.onComplete = function(callback) {
+			 		A.callback = callback;
+			 	}
+			}
+
+			Polyfills = new function() {
+				trace ( 'Index.Polyfills:' )
+
+				/** Method: CustomEvent() */
+				try {
+					new CustomEvent('test');
+				} catch(e) {
+					trace( ' -> CustomEvent')
+					function CustomEvent2 ( event, params ) {
+						params = params || { bubbles: false, cancelable: false, detail: undefined };
+						var evt = document.createEvent( 'CustomEvent' );
+						evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+						return evt;
+					}
+					CustomEvent2.prototype = window.Event.prototype;
+					window.CustomEvent = CustomEvent2;
+				}	
+				
+			}
+
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: mixin/LoaderTicker.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function LoaderTicker(){
+				var L = this;
+				L._setTicker = function ( args ) {
+					
+					var node = document.createElement('div');
+					node.innerHTML = args.content;
+					node.style.cssText = args.css || '';
+			
+					document.body.appendChild(node);
+			
+					var width = args.width != undefined ? args.width : node.offsetWidth;
+					
+					node.style.fontFamily = args.font || '';
+			
+					var _timeOut = setTimeout(function() {
+						clearInterval( _interval );
+						L._handleFail();
+					}, 5000 );
+			
+					var _interval = setInterval(function(){
+						if ( node.offsetWidth != width ){
+							clearTimeout( _timeOut );
+							clearInterval( _interval );
+							
+							L._handleTickerComplete(node);
+						}
+					}, 10 );
+				},
+			
+				L._removeTickerNode = function ( node ){
+					node.parentNode.removeChild( node );
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: mixin/LoaderBase.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function LoaderBase(){
+				var L = this;
+				var arg = arguments && arguments.length > 1 ? arguments[1] : arguments[0] || {};
+				
+				L.onComplete = arg.onComplete || function(){};
+				L.onFail = arg.onFail || function(){};
+				L.onProgress = arg.onProgress || function(){};
+				L.name = arg.name || '';
+				L.scope = arg.scope || L;
+				L.dataRaw;
+				L.cacheBuster = arg.cacheBuster || false;
+			
+				L._failCalled = false;
+				L._handleFail = function () {
+					trace ( 'LoaderBase._handleFail()' )
+					if ( !L._failCalled ){
+						L._failCalled = true;
+						L.onFail.call( L.scope, L );
+			
+						trace ( 'Loader "'+ L.name + '" Fail:', L.url );
+					}
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: mixin/LoaderSource.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function LoaderSource(){
+				var L = this;
+				var arg = arguments && arguments.length > 1 ? arguments[1] : arguments[0] || {};
+				
+				L.url = global.matchProtocolTo( arguments[0] || '' );
+				
+				if ( arg.platformGetUrl ){ 
+					L.platformGetUrl = arg.platformGetUrl;
+					L.url = arg.platformGetUrl ( L.url );
+				}
+			
+				L.fileName = arg.id === undefined ? LoaderUtils.getFileName ( L.url ) : arg.id;
+				L.fileType = arg.fileType || LoaderUtils.getFileType ( L.url );
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: mixin/LoaderUtils.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			var LoaderUtils = new function(){
+				var L = this;
+			
+				L.createXMLHttpRequest = function() {
+					try { return new XMLHttpRequest(); } catch(e){}
+					try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch(e){}
+					alert("XMLHttpRequest not supported");
+					return null;
+				}
+			
+				L.getFileName = function ( url ){
+					var extension = url.lastIndexOf('.');
+					var directory = url.lastIndexOf('/') + 1;
+					if ( directory > extension ) extension = undefined;
+					return url.substring( directory, extension );
+				}
+			
+				L.getFontName = function ( url ){
+					return url.substring( url.lastIndexOf('/') + 1, url.indexOf( '.' ));
+				}
+			
+				L.getFileType = function ( url ) {
+					url = url || '';
+					var _index = url.indexOf ( '?' );
+					if ( _index > -1 ){
+						url = url.substr ( 0, _index );
+					}
+					var _split = url.match ( /[^\\]*\.(\w+)$/ );
+					var _base64 = url.match ( /image\/(jpeg|jpg|png)/ );
+					var _type = _split ? _split[1] : _base64 ? _base64[1] : 'unknown' ;
+					
+					return _type;
+				}
+			
+				L.getFullUrl = function( prepend, file, platformGetUrl ){
+					var _prepend = LoaderUtils._getUrlPrepend ( prepend );
+					var _url = global.matchProtocolTo( _prepend + _file );
+					if ( platformGetUrl ){ 
+						_url = platformGetUrl ( _url );
+					}
+					return url;
+				}
+			
+				L.getUrlPrepend = function(path){
+					return path ? path.replace(/\/?$/, '/') : '' ;
+				}
+			
+				L.getParamsFromData = function ( query ) {
+					if( typeof query === 'string' ){
+						return query;
+					} else {
+						var queryString = '';			
+						for( var prop in query ) {
+							trace ( "      prop =", prop )
+							queryString += prop + '=' + query[ prop ] + '&';
+						}
+			
+						return queryString.substr( 0, queryString.length - 1 );
+					}
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: single/InlineLoader.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function InlineLoader(){	
+				var I = this;
+				LoaderSource.apply(I,arguments);
+				LoaderBase.apply(I,arguments);
+			}
+			
+			InlineLoader.prototype = {
+				load : function(){
+					var I = this;
+					var elem = I.fileType == 'css' ? I._createLink() : I._createScript();
+					elem.charset = 'utf-8';
+					elem.onload = I._handleComplete.bind(I);
+					elem.onerror = I._handleFail;
+					I.fileType == 'css' ? elem.href = this.url : elem.src = I.url;
+					document.getElementsByTagName( 'head' )[0].appendChild( elem );
+				},
+			
+				_createScript : function(){
+					var elem = document.createElement( 'script' );
+					elem.type = 'text/javascript';
+					return elem;
+				},
+			
+				_createLink : function(){
+					var elem = document.createElement( 'link' );
+					elem.rel = 'stylesheet';
+					elem.type = 'text/css';
+					return elem;
+				},
+			
+				_handleComplete : function (event) {
+					var I = this;
+					I.dataRaw = event.target;
+					I.onComplete.call( I.scope, I );
+				}
+			}
+			InlineLoader.prototype.constructor = InlineLoader;
+			LoaderSource.call( InlineLoader.prototype );
+			LoaderBase.call( InlineLoader.prototype );
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: single/DataLoader.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function DataLoader(){	
+				var D = this;
+				LoaderSource.apply(D,arguments);
+				LoaderBase.apply(D,arguments);
+			
+				var arg = arguments && arguments.length > 1 ? arguments[1] : arguments[0] || {};
+				
+				D.method = (arg.method || 'get').toLowerCase();
+				D.query = arg.query || null;
+				D.responseType = arg.responseType || null;
+			}
+			
+			DataLoader.prototype = {
+				load : function(){		
+					var D = this;
+					trace ( 'DataLoader "' + D.name + '" requesting:\n\t->', D.url )
+					
+					var queryString = null;
+					var isPost = D.method === 'post';
+			
+					D.req = LoaderUtils.createXMLHttpRequest();
+			
+					if ( D.responseType != undefined )
+						D.req.responseType = D.responseType;
+			
+					var url = D.url;
+				
+					if ( D.query ) {
+						queryString = LoaderUtils.getParamsFromData( D.query );
+						encodeURIComponent( queryString );
+						if ( !isPost ){
+							url += '?' + queryString;
+							queryString = null;
+						}			
+					}
+					
+					if ( D.cacheBuster ){
+						url += D.query && !isPost ? '&' : '?' ;
+						url += 'cb=' + new Date().getTime();
+					}
+					
+					D.req.onreadystatechange = D._handleStateChange.bind ( D );
+					D.req.open( D.method, url, true );
+					switch ( D.fileType ){
+						case 'xml' :
+							if ( D.req.overrideMimeType ) 
+								D.req.overrideMimeType( 'text/xml' );
+							break;
+						case 'json' :
+							if ( D.req.overrideMimeType ) 
+								D.req.overrideMimeType( 'application/json' );
+							break;
+						case 'fba' :
+						case 'bin' :
+						case 'binary' :
+							D.responseType = D.req.responseType = 'arraybuffer';
+							break;
+					}
+			
+					if( D.method === 'post'){
+						D.req.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
+					}
+			
+					D.req.send( queryString );	
+				},
+			
+				_handleStateChange : function ( target ) {
+					var D = this;
+					switch ( D.req.readyState ){
+						case 3 :
+							if ( this.req.status == 200 ){
+								D.dataRaw = D.responseType ? D.req.response : D.req.responseText;
+								D._handleProgress(D);
+							}
+							break;
+						case 4 :
+							if ( D.req.status == 200 ){		
+								D.dataRaw = D.responseType ? D.req.response : D.req.responseText;
+								D._handleComplete(D);
+							} else {
+								D._handleFail ({ target:target });
+							}
+							break;
+					}
+				},
+			
+				_handleProgress : function(){
+					var D = this;
+					D.onProgress.call( D.scope, D );
+				},
+			
+				_handleComplete : function(){
+					var D = this;
+					trace ( 'DataLoader "' + D.name + '" is Complete' )
+					D.onComplete.call( D.scope, D );
+				}
+			}
+			DataLoader.prototype.constructor = DataLoader;
+			LoaderSource.call( DataLoader.prototype );
+			LoaderBase.call( DataLoader.prototype );
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: single/ImageLoader.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function ImageLoader(){	
+				var I = this;
+				LoaderSource.apply(I,arguments);
+				LoaderBase.apply(I,arguments);	
+				LoaderTicker.apply(I,arguments);	
+			
+				var arg = arguments && arguments.length > 1 ? arguments[1] : arguments[0] || {};
+				I.renderOnly = !!arg.renderOnly;
+				I.crossOrigin = arg.crossOrigin;
+			}
+			
+			ImageLoader.prototype = {
+				load : function(){
+					var I = this;
+					if ( I.renderOnly ){
+						I._setTicker({
+							content : I.url,
+							width : 0	
+						});
+					} else {
+						var img = new Image();
+						img.id = I.fileName;
+						img.crossOrigin = I.crossOrigin;
+						img.onload = I._handleComplete.bind(I);
+						img.onerror = I._handleFail;
+						
+						img.src = I.url;
+					}
+				},
+			
+				_handleTickerComplete : function( node ) {
+					var I = this;
+					var children = node.childNodes;
+					for( var i = 0; i < children.length; i++ ){
+						var child = children[i]
+						if ( child instanceof SVGElement ){
+							child.id = I.fileName;
+							break;
+						}
+					}
+					I._handleComplete({ target:child });
+					I._removeTickerNode ( node );
+				},
+			
+				_handleComplete : function (event) {
+					var I = this;
+					I.dataRaw = event.target;
+					I.onComplete.call( I.scope, I );
+				}
+			}
+			
+			ImageLoader.prototype.constructor = ImageLoader;
+			LoaderSource.call( ImageLoader.prototype );
+			LoaderBase.call( ImageLoader.prototype );
+			LoaderTicker.call( ImageLoader.prototype );
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: single/FontLoader.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function FontLoader(){	
+				var F = this;
+				LoaderSource.apply(F,arguments);
+				LoaderBase.apply(F,arguments);
+				LoaderTicker.apply(F,arguments);	
+			}
+			
+			FontLoader.prototype = {
+				load : function (){
+					var F = this;
+			
+					F.fileName = F.fileName.split('.')[0];
+			
+					var assembledFontRule = "@font-face { font-family: " + F.fileName + "; src: url(" + F.url + ") format('truetype'); }";
+					
+					var getSheet = document.getElementById('RED_fontStyleSheet');
+					if ( getSheet ){
+						getSheet.innerHTML += assembledFontRule;
+					} else {
+						var styleScript = document.createElement('style');
+						styleScript.type = 'text/css';
+						styleScript.media = 'screen';
+						styleScript.id = 'RED_fontStyleSheet';
+						styleScript.appendChild(document.createTextNode( assembledFontRule ));
+						document.getElementsByTagName( 'head' )[0].appendChild( styleScript );
+					}	
+			
+					F._setTicker({
+						content : " !\"\\#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+						css : 'position:absolute; top:-1000px; font-size:100px; font-family:san-serif; font-variant:normal; font-style:normal; font-weight:normal; letter-spacing:0; white-space:nowrap;',
+						font : F.fileName
+					});
+				},
+			
+				_handleTickerComplete : function( node ) {
+					var F = this;
+					setTimeout(function(){
+						F._removeTickerNode ( node );
+					}, 300);
+			
+					F._handleComplete();
+				},
+			
+				_handleComplete : function (event) {
+					trace ( 'FontLoader complete' )
+					var F = this;
+					F.dataRaw = F.fileName;
+					F.onComplete.call( F.scope, F );
+				}
+			}
+			
+			FontLoader.prototype.constructor = FontLoader;
+			LoaderSource.call( FontLoader.prototype );
+			LoaderBase.call( FontLoader.prototype );
+			LoaderTicker.call( FontLoader.prototype );
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: single/FbvLoader.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function FbvLoader(){	
+				var F = this;
+				trace ( 'FbvLoader arguments:', arguments, F );
+				DataLoader.apply(F,arguments);
+			
+				var arg = arguments && arguments.length > 1 ? arguments[1] : arguments[0] || {};
+			
+				F.onSpecs = arg.onSpecs || function(){};
+				F.available = 0;
+				F.images = [];
+				F.isBytesLoaded = false;
+			
+				F._imagesRaw = [];
+				F._prev = -1;
+				F._specs;
+				F._byteLength = 0;
+				F._byteBuffer = 3000;
+				F._imageRequestMax = 6; 
+				
+				F._imageRequestExcess = false;
+			}
+			
+			FbvLoader.prototype = Object.create(DataLoader.prototype);
+			FbvLoader.prototype.constructor = FbvLoader;
+			FbvLoader.prototype._handleProgress = function( event ){
+				var F = this;
+				if ( F._imageRequestExcess && !F.isBytesLoaded ){
+					F._manageImageCreate ();
+					return;
+				}
+				var _byteDiff = event.dataRaw.length - F._byteLength;
+				F._byteLength = event.dataRaw.length;
+				if ( _byteDiff < F._byteBuffer && _byteDiff > 0 && F._specs ){
+					trace ( 'skip' )
+					return;
+				}
+				F._imagesRaw = event.dataRaw.split(':::');
+				if ( F._imagesRaw.length > 1 ) {
+					var splitSpecs = F._imagesRaw[0].split(';;;');
+					if ( !F._specs ) {
+						F._specs = JSON.parse(splitSpecs[0]);
+						trace ( 'FBV Specs:', F._specs );
+						trace ( F )
+						F.onSpecs.call( F.scope, F );
+					}
+					F._imagesRaw[0] = splitSpecs[1];
+					F._manageImageCreate();
+				} 
+			}
+			
+			FbvLoader.prototype._manageImageCreate = function(){
+				var F = this;
+				var total = F._imagesRaw.length;
+				if ( !F.isBytesLoaded ) {
+					total -= 2;
+				}	
+				var diff = total - F._prev;				
+				var loadedImagesBuffer = F._prev - F.available;
+				if ( loadedImagesBuffer > F._imageRequestMax ){
+					F._imageRequestExcess = true;
+					return;
+				}
+				if ( diff > F._imageRequestMax ){
+					F._imageRequestExcess = true;
+					total = total - diff + F._imageRequestMax;
+				} else {
+					F._imageRequestExcess = false;
+				}
+				for ( var i = F._prev; i < total; i++ ){
+					F._imageCreateStart(i);
+				}
+			
+				if ( F._imageRequestExcess ){
+					F._prev = total;			
+				} else {
+					F._prev = F._imagesRaw.length - 2;
+				}
+			}
+			
+			FbvLoader.prototype._imageCreateStart = function ( id ){
+				if ( id < 0 ) return;
+			
+				var F = this;
+			
+				if ( F.images[id] ){
+					trace ( 'FbvLoader : frame ' + id + ' already populated')
+					return;
+				}
+				var frameRawInfo = F._imagesRaw[id].split(')');
+			
+				F.images[id] = {
+					dataRaw : frameRawInfo
+				}
+				var src = 'data:image/jpg;base64,' + frameRawInfo[1];
+				new ImageLoader ( src, {
+					id : id,
+					scope: F,
+					fileType: 'jpg',
+					onComplete : F._handleImageLoadComplete, 
+					onFail : function(event){
+						trace ( 'FbvLoader : FAILED -> ImageLoader video frame ' + event.target.id + ' Image' );
+					} 
+				}).load();
+			}
+			
+			FbvLoader.prototype._handleImageLoadComplete = function( event ){
+				var F = this;
+				var img = event.dataRaw;
+				F.images[img.id].image = img;
+				
+				F.available++;
+				var progress = F.available / F._specs.frames;
+				F.onProgress.call( F.scope, F, img );
+				if ( F.isBytesLoaded && F._imageRequestExcess ){
+					if ( F.available + F._imageRequestMax >= F._prev ){
+						F._manageImageCreate();
+					}					
+				}
+			
+				if ( +img.id === F._specs.frames - 1 ){
+					trace ( 'FbvLoader : ALL IMAGES CREATED' )
+					F.onComplete.call( F.scope, F );
+				}
+			}
+			
+			FbvLoader.prototype._handleComplete = function( event ){
+				trace ( 'FbvLoader : ALL DATA LOADED' )
+				var F = this;
+				F.isBytesLoaded = true;
+				F._handleProgress ( event );
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: single/ViewLoader.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function ViewLoader() {	
+				var V = this;
+				LoaderBase.apply( V, arguments );
+			
+				var arg = arguments && arguments.length > 1 ? arguments[ 1 ] : arguments[ 0 ] || {};
+			
+				V.viewPaths = arguments[ 0 ];
+			}
+			ViewLoader.prototype = {
+				load: function() {
+					var V = this;
+			
+					if( !V.viewPaths.length ) {
+						V.onComplete.call( V.scope, V );
+						return;
+					}
+					
+					var completedLoad = 0;
+					for( var i in V.viewPaths ) {
+						trace( ' - Loading View: ', V.viewPaths[ i ] );
+						new DataLoader( V.viewPaths[ i ], {
+							fileType: 'text/html',
+							onComplete: function( data ) {
+								V.processLoadedView( data );
+								completedLoad++;
+								if( completedLoad === V.viewPaths.length ) {
+									V.onComplete.call( V.scope, V );
+								}
+							}
+						}).load();
+					}
+				},
+			
+				processLoadedView: function( data ) {
+					var style = '';
+					var styleTagRegex = new RegExp( '<style[^>]*>(.*)<\/style>', 'g' );
+					while( match = styleTagRegex.exec( data.dataRaw ) ) {
+						style += match[ i ];
+					}
+					var html = data.dataRaw.replace( styleTagRegex, '' ).trim();
+					global.Views[ data.fileName ] = html;
+					global.ViewStyles[ data.fileName ] = style;
+				}
+			}
+			
+			
+			ViewLoader.prototype.constructor = ViewLoader;
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/* -- LOADER: Loader.js -----------------------------------------------------------------------------------------
+			 *
+			 *
+			 *
+			 */
+			function Loader(){
+				var L = this;
+			
+				LoaderBase.apply(L,arguments);
+			
+				var arg = arguments && arguments.length > 1 ? arguments[1] : arguments[0] || {};
+			
+				L._queue = {};
+				L._total = 0;
+				L._active = false;
+				L._startedCount = 0;
+			
+				L.prepend = arg.prepend || '';
+				L.platformGetUrl = arg.platformGetUrl;
+				L.fileType = arg.fileType || null;
+				L.content = [];
+			
+				L.crossOrigin = arg.crossOrigin || undefined;
+			
+				L.add( arguments[ 0 ] );
+			}
+			
+			Loader.prototype.constructor = Loader;
+			LoaderBase.call( Loader.prototype );
+			
+			Loader.prototype = {
+				add : function ( arg ){
+					var L = this;
+					if ( typeof arg === 'string' ){
+						L._addSingleLoad ( arg );
+					} else if ( arg instanceof Array ){
+						for ( var i = 0; i < arg.length; i++ ){
+							L._addSingleLoad ( arg[i] );
+						}
+					} else if ( arg instanceof Loader ){
+						if ( arg.content && arg.content[0] && arg.content[0].fileType == 'fba' ){
+							L._addFbaSubLoads( arg.content[0] );
+						} else {
+							L._addSubLoad( arg );
+						}
+					}
+				},
+				load : function(){
+					var L = this;
+					L._active = true;
+					if ( L._total <= 0 ){
+						trace ( 'Loader "' + L.name + '" has NO assets to be loaded.' );
+					} else {
+						var _has = false;
+						var _output = '';
+						for ( var l in L._queue ) {
+							if ( !(L._queue[l] instanceof Loader) ) {
+								if ( !_has ){
+									_has = true;
+									_output += 'Loader "' + L.name + '" requesting:';
+								}
+								var fileName = L._queue[l].fileName;
+								var extension = L._queue[l].fileType
+								var extensionIndex = fileName.indexOf( '.' + extension )
+								var fileAndExtension = extensionIndex > -1 ? fileName : fileName + '.' + extension;
+								_output += '\n\t -> ' + (L._queue[l].prepend||'') + fileAndExtension;
+							} 	
+						}
+						if ( _has ) trace ( _output );
+					}
+					
+					L._startSingleLoad(0);
+				},
+				getAllContent : function(){
+					var _found = [];
+					function searchSubLoader ( content ){
+						for ( var i = 0; i < content.length; i++ ){
+							if ( content[i] instanceof Loader ){
+								searchSubLoader ( content[i].content );
+							} else {
+								_found.push(content[i]);
+							} 
+						}
+					}
+			
+					searchSubLoader ( this.content );
+			
+					if ( _found.length < 1 ) trace ( "No Content found" );
+					
+					return _found;
+				},
+				getAllContentRaw : function(){
+					var _content = this.getAllContent();
+					for ( var i = 0; i < _content.length; i++ ){
+						_content[i] = _content[i].dataRaw;
+					}
+					return _content;
+				},
+				getLoader : function ( id ){
+					var _found = null;
+					function searchSubLoader ( content ){
+						for ( var i = 0; i < content.length; i++ ){
+							if ( content[i] instanceof Loader ){
+								if ( content[i] && (content[i].name === id || content[i] === id) ){
+									_found = content[i];
+								} else {
+									searchSubLoader ( content[i].content );
+								}
+							} 
+						}
+					}
+			
+					searchSubLoader ( this.content );
+			
+					if ( !_found ) trace ( "No Loader found of that name" );
+					
+					return _found;
+				},
+				_addSingleLoad : function ( url, fbaOverwrite ){
+					var L = this;
+					var fileType = fbaOverwrite ? fbaOverwrite[1] : ( L.fileType || LoaderUtils.getFileType ( url ) );	
+					var loaderType;
+			
+					switch ( fileType ){
+						case 'jpg' :
+						case 'jpeg' :
+						case 'gif' :
+						case 'png' :
+						case 'svg' :
+							loaderType = 'ImageLoader';
+							break;
+						case 'ttf' :
+							loaderType = 'FontLoader';
+							break;
+						case 'json' :
+						case 'fba' :
+						case 'bin' :
+						case 'binary' :	
+							loaderType = 'DataLoader';
+							break;
+						case 'fbv' :
+							loaderType = 'FbvLoader';
+							break;
+						default :
+							loaderType = 'InlineLoader';
+					}
+					var url = fbaOverwrite ? url : L.prepend + url;
+			
+					var singleLoader = new global [ loaderType ] ( url, {
+						scope : L,
+						platformGetUrl : L.platformGetUrl,
+						onComplete : L._handleSingleLoadComplete,
+						onFail : L._handleFail,
+						fileType : fileType,
+						cacheBuster : L.cacheBuster,
+						crossOrigin : L.crossOrigin
+					});
+					if ( fbaOverwrite )	{
+						singleLoader.fileName = fbaOverwrite[0];
+					}
+							
+					singleLoader.queueIndex = L._total;
+					
+					L._queue [ L._total ] = singleLoader;
+					L._total++;
+				},
+			
+				_addSubLoad : function ( loader ){
+					var L = this;
+					loader.onComplete = L._handleSingleLoadComplete.bind(L);
+					loader.onProgress = L._handleProgress.bind(L);
+					loader.onFail = L._handleFail;
+					loader.queueIndex = L._total;
+					L._queue [ L._total ] = loader;
+					L._total++;
+				},
+			
+				_addFbaSubLoads : function ( loader ){
+					trace ( "_addFbaSubLoads()", loader )
+					var uint8 = new Uint8Array(4)
+					var uint32 = new Uint32Array(uint8.buffer)
+					var idx = 44;
+			
+					var chunkTotal = new Uint8Array ( loader.dataRaw, idx, 1 )[0]
+					idx += 5;
+					
+					for ( var i = 0; i < chunkTotal; i++ ){
+						var sizeOfChunk = new Uint8Array ( loader.dataRaw, idx, 4 )
+						var up = 4;
+						for ( var k = 0; k < 4; k++ ){
+							uint8[--up] = sizeOfChunk[k]
+						}
+						var length = uint32[0]
+						
+						idx += 7
+						var type = String.fromCharCode( new Uint8Array ( loader.dataRaw, idx++, 1 ) );			
+						var fileNameLengthArray = new Uint8Array ( loader.dataRaw, idx + 3, 1 )
+						var fileNameLength = fileNameLengthArray[0] || 0; // default to zero incase array fails? maybe unnecessary
+									
+						var nameBuffer = new Uint8Array ( loader.dataRaw, idx + 4, fileNameLength )
+						var fileName = String.fromCharCode.apply(String, nameBuffer);
+						fileNameLength += 4
+						var chunkData = new Uint8Array ( loader.dataRaw, idx + fileNameLength, length - fileNameLength );
+						idx += length + 4;
+						
+						var fileNameSplit = fileName.split('.');
+						var blobFileType = type == 'f' ? 'application/x-font-ttf' : 'image/' + ( fileNameSplit[1] == 'svg' ? 'svg+xml' : fileNameSplit[1] );	
+						var blob = new Blob ( [ chunkData ], { type:blobFileType });
+						var url = URL.createObjectURL(blob); 
+						this._addSingleLoad ( url, fileNameSplit )
+					}
+				},
+			
+				_startSingleLoad : function(i){
+					var L = this;
+					var _inst = L._queue[i];
+					if ( L._total == 0 ){
+						L._handleComplete();
+					} else {
+						if ( i < L._total ){
+							if ( !(_inst instanceof Loader) ){
+								if ( i < L._total - 1 ) {
+									L._startLoadTimeOut(++i);
+								}
+							}
+							_inst.load();
+						}
+					}
+				},
+			
+				_startLoadTimeOut : function(i){
+					var L = this;
+					setTimeout( function(){
+						L._startSingleLoad(i)
+					}, 10 );
+				},
+				_handleSingleLoadComplete : function ( target ) {
+					var L = this;
+					L.content [ target.queueIndex ] = target;
+					delete L._queue [ target.queueIndex ];
+					
+					L._handleProgress();
+					if ( target.url == undefined ){
+						if ( target.queueIndex < L._total - 1 ){
+							L._startLoadTimeOut(target.queueIndex+1);
+						}
+					}
+				},
+			
+				_handleProgress : function(){
+					var L = this;
+					var _length = L.content.length;
+					var _count = 0;
+					for ( var i = 0; i < _length; i++ ){
+						if ( L.content[i] ) _count++;
+					}	
+			
+					var _consecutive = _count;
+					var _subProgress = 0;
+							
+					if ( _count < L._total && L._queue[_count] ){			
+						_subProgress = L._queue[_count].progress / L._total || 0;
+					}	
+			
+					L.progress = _consecutive / L._total + _subProgress;
+					L.rawProgress = _count / L._total + _subProgress;
+			
+					L.onProgress.call( L.scope, L );
+					if ( _count >= L._total ){
+						L._handleComplete();
+					}
+				},
+			
+				_handleComplete : function(){
+					var L = this;
+					trace ( 'Loader "' + L.name + '" is Complete' )
+					L.onComplete.call( L.scope, L );
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		</script>
+	</body>
+</html>
