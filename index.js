@@ -1,10 +1,13 @@
 // IMPORTS
-const fs = require('fs-extra') // https://github.com/jprichardson/node-fs-extra
+const fs = require('fs')
+const fx = require('fs-extra') // https://github.com/jprichardson/node-fs-extra
 const crc32 = require('crc-32')	// https://github.com/SheetJS/js-crc32
 const struct = require('python-struct') // https://github.com/danielgindi/node-python-struct
 const zlib = require('zlib')
 const constants = require('pngjs/lib/constants')
 const Packer = require('pngjs/lib/packer')
+const path = require('path')
+const mkdirp = require('mkdirp')
 // const extract = require('png-chunks-extract')
 
 // DEBUGGING
@@ -67,7 +70,7 @@ const compile = (_args) => {
 // -------------------------------------------------------------------------------------------------------------
 const prepareNewChunks = () => {
 	return new Promise((resolve, reject) => {
-		log('Compiling assets')
+		log('FBA-Compiling ->')
 
 		// iterate assets
 		const promises = []
@@ -103,7 +106,7 @@ const packAsset = (chunkType, assetPath) => {
 			I couldn't find the raw buffer in the dependency graph.
 			url-loader seems to be automatically base64-ing the source
 	 */
-	return fs.readFile(assetPath)
+	return fx.readFile(assetPath)
 	.then((data) => {			
 		// required order:
 		// - fileNameSizeBA
@@ -288,7 +291,11 @@ const buildPng = () => {
 	var pngBuffer = Buffer.concat(chunks)
 
 	// Emit
-	log(`Emitting -> ${args.target}`)
+	log(` ${args.target}`)
+	const targetPath = path.dirname(args.target);
+	if (!fs.existsSync(targetPath)) {
+		mkdirp.sync(targetPath);
+	}
 	fs.writeFile(args.target, pngBuffer, (error) => {  
 		if (error) throw error
 	})
