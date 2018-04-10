@@ -11,7 +11,7 @@ const mkdirp = require('mkdirp')
 // const extract = require('png-chunks-extract')
 
 // DEBUGGING
-const debug = require('debug')
+const debug = require('@ff0000-ad-tech/debug')
 const log = debug('fba-compiler')
 const log1 = debug('fba-compiler:+')
 debug.disable('fba-compiler:+')
