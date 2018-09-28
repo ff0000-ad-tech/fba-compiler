@@ -107,7 +107,7 @@ const packAsset = (chunkType, assetPath) => {
 			// - the asset byte array
 
 			// get the file name
-			const fileName = assetPath.substring(assetPath.lastIndexOf('/') + 1)
+			const fileName = path.basename(assetPath)
 			// file name as a byte array
 			const fileNameBA = Buffer.from(fileName)
 			// calculate size of the file name string
