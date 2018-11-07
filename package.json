@@ -1,38 +1,42 @@
 {
-  "name": "@ff0000-ad-tech/fba-compiler",
-  "publishConfig": {
-    "access": "public"
-  },
-  "version": "1.0.5",
-  "description": "",
-  "main": "main.js",
-  "scripts": {
-    "pub": "np"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ff0000-ad-tech/fba-compiler.git"
-  },
-  "author": {
-    "name": "Kenny Arehart"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "crc-32": "^1.1.1",
-    "@ff0000-ad-tech/debug": "^4.0.2",
-    "fs-extra": "^4.0.2",
-    "pngjs": "^3.3.0",
-    "python-struct": "^1.0.6"
-  },
-  "devDependencies": {
-    "babel-eslint": "^8.2.2",
-    "eslint": "^4.16.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.5.0",
-    "np": "^2.19.0",
-    "prettier": "^1.10.2"
-  },
-  "directories": {
-    "test": "tests"
-  }
+	"name": "@ff0000-ad-tech/fba-compiler",
+	"publishConfig": {
+		"access": "public"
+	},
+	"version": "1.0.5",
+	"description": "",
+	"main": "main.js",
+	"scripts": {
+		"pub": "np"
+	},
+	"engines": {
+		"node": ">=9.8.0",
+		"npm": ">=6.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ff0000-ad-tech/fba-compiler.git"
+	},
+	"author": {
+		"name": "Kenny Arehart"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"crc-32": "^1.1.1",
+		"@ff0000-ad-tech/debug": "^4.0.2",
+		"fs-extra": "^4.0.2",
+		"pngjs": "^3.3.0",
+		"python-struct": "^1.0.6"
+	},
+	"devDependencies": {
+		"babel-eslint": "^8.2.2",
+		"eslint": "^4.16.0",
+		"eslint-config-prettier": "^2.9.0",
+		"eslint-plugin-prettier": "^2.5.0",
+		"np": "^2.19.0",
+		"prettier": "^1.10.2"
+	},
+	"directories": {
+		"test": "tests"
+	}
 }
