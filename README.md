@@ -1,14 +1,13 @@
-##### RED Interactive Agency - Ad Technology
-
-[![npm (tag)](https://img.shields.io/npm/v/@ff0000-ad-tech%2Ffba-compiler.svg?style=flat-square)](https://www.npmjs.com/package/@ff0000-ad-tech%2Ffba-compiler)
-[![GitHub issues](https://img.shields.io/github/issues/ff0000-ad-tech/fba-compiler.svg?style=flat-square)](https://github.com/ff0000-ad-tech/fba-compiler)
-[![npm downloads](https://img.shields.io/npm/dm/@ff0000-ad-tech%2Ffba-compiler.svg?style=flat-square)](https://www.npmjs.com/package/@ff0000-ad-tech%2Ffba-compiler)
-
-[![GitHub contributors](https://img.shields.io/github/contributors/ff0000-ad-tech/fba-compiler.svg?style=flat-square)](https://github.com/ff0000-ad-tech/fba-compiler/graphs/contributors/)
-[![GitHub commit-activity](https://img.shields.io/github/commit-activity/y/ff0000-ad-tech/fba-compiler.svg?style=flat-square)](https://github.com/ff0000-ad-tech/fba-compiler/commits/master)
-[![npm license](https://img.shields.io/npm/l/@ff0000-ad-tech%2Ffba-compiler.svg?style=flat-square)](https://github.com/ff0000-ad-tech/fba-compiler/blob/master/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+##### 160over90 - Ad Technology
 
 # FBA Compiler
 
-This utility packs binary assets (images, fonts, ...) into a single PNG file. These are then loaded and made available to frontend via [ff0000-ad-tech/ad-load](https://github.com/ff0000-ad-tech/ad-load).
+This utility optionally packs binary assets (images, fonts, ...) into a single PNG file.
+
+The benefit of doing so is that your ad will make fewer requests for assets. The downside is that additional cycles are necessary to parse the fba-payload back into dataURIs for DOM elements.
+
+Tests should be done to see if networks supporting HTTP2 load multiple image/font requests faster than the client can parse the FBA-payload.
+
+Switch on FBA-compiling in [Creative Server](https://github.com/ff0000-ad-tech/wp-creative-server) in the deploy profile, like:
+
+![Creative Server: FBA-compiling switch](https://github.com/ff0000-ad-tech/fba-compiler/tree/master/docs/images/cs-control.png)
